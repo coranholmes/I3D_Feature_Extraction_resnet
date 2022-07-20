@@ -45,6 +45,7 @@ python -m utils.convert_weights pretrained/i3d_baseline_32x2_IN_pretrain_400k.pk
 --outputpath:        folder of extracted features
 --frequency:         how many frames between adjacent snippet
 --batch_size:        batch size for snippets
+--last_segment:	     whether to cut or pad last segment ("padding" or "cutting")
 </pre>
 
 ### Run

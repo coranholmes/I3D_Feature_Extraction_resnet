@@ -53,7 +53,7 @@ def oversample_data(data):
 		data_f_1, data_f_2, data_f_3, data_f_4, data_f_5]
 
 
-def run(i3d, frequency, frames_dir, batch_size, sample_mode):
+def run(i3d, frequency, frames_dir, batch_size, sample_mode, last_segment):
 	assert(sample_mode in ['oversample', 'center_crop'])
 	print("batchsize", batch_size)
 	chunk_size = 16
@@ -72,12 +72,19 @@ def run(i3d, frequency, frames_dir, batch_size, sample_mode):
 	# split frames into segments
 	assert(frame_cnt > chunk_size)
 	frame_indices = []
-	for i in range(0, frame_cnt, frequency):
-		frame_indices.append(list(range(i, min(i + frequency, frame_cnt))))
-	# deal with last frame
-	last_idx = frame_indices[-1][-1]
-	repeat = [last_idx] * (frequency - len(frame_indices[-1]))
-	frame_indices[-1].extend(repeat)
+
+	if last_segment == "padding":
+		for i in range(0, frame_cnt, frequency):
+			frame_indices.append(list(range(i, min(i + frequency, frame_cnt))))
+		# deal with last frame
+		last_idx = frame_indices[-1][-1]
+		repeat = [last_idx] * (frequency - len(frame_indices[-1]))
+		frame_indices[-1].extend(repeat)
+	else:  # last_segment == "cutting"
+		clipped_length = frame_cnt - chunk_size
+		clipped_length = (clipped_length // frequency) * frequency  # The start of last chunk
+		for i in range(clipped_length // frequency + 1):
+			frame_indices.append([j for j in range(i * frequency, i * frequency + chunk_size)])
 
 	frame_indices = np.array(frame_indices)
 	chunk_num = frame_indices.shape[0]
