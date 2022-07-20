@@ -17,6 +17,18 @@ I modified and combined them and also added features to make it suitable for the
 This code takes a folder of videos as input and for each video it saves ```I3D``` feature numpy file of dimension ```1*n/16*2048``` where n is the no.of frames in the video
 
 ## Usage
+### Pre-requisite
+Install ffmpeg
+```bash
+sudo apt-get update
+sudo apt-get install ffmpeg
+```
+
+Install requirements.txt
+```bash
+pip install -r requirements.txt
+```
+
 ### Setup
 Download pretrained weights for I3D from the nonlocal repo
 ```bash

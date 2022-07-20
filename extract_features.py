@@ -69,13 +69,16 @@ def run(i3d, frequency, frames_dir, batch_size, sample_mode):
 	rgb_files = [i for i in os.listdir(frames_dir)]
 	rgb_files.sort()
 	frame_cnt = len(rgb_files)
-	# Cut frames
+	# split frames into segments
 	assert(frame_cnt > chunk_size)
-	clipped_length = frame_cnt - chunk_size
-	clipped_length = (clipped_length // frequency) * frequency  # The start of last chunk
-	frame_indices = [] # Frames to chunks
-	for i in range(clipped_length // frequency + 1):
-		frame_indices.append([j for j in range(i * frequency, i * frequency + chunk_size)])
+	frame_indices = []
+	for i in range(0, frame_cnt, frequency):
+		frame_indices.append(list(range(i, min(i + frequency, frame_cnt))))
+	# deal with last frame
+	last_idx = frame_indices[-1][-1]
+	repeat = [last_idx] * (frequency - len(frame_indices[-1]))
+	frame_indices[-1].extend(repeat)
+
 	frame_indices = np.array(frame_indices)
 	chunk_num = frame_indices.shape[0]
 	batch_num = int(np.ceil(chunk_num / batch_size))    # Chunks to batches

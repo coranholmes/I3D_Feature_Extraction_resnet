@@ -33,7 +33,7 @@ def generate(datasetpath, outputpath, pretrainedpath, frequency, batch_size, sam
 		ffmpeg.input(video).output('{}%d.jpg'.format(temppath),start_number=0).global_args('-loglevel', 'quiet').run()
 		print("Preprocessing done..")
 		features = run(i3d, frequency, temppath, batch_size, sample_mode)
-		np.save(outputpath + "/" + videoname, features)
+		np.save(outputpath + "/" + videoname + "_i3d", features)
 		print("Obtained features of size: ", features.shape)
 		shutil.rmtree(temppath)
 		print("done in {0}.".format(time.time() - startime))
