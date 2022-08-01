@@ -11,7 +11,7 @@ import torch.optim as optim
 from torch.optim import lr_scheduler
 from torch.autograd import Variable
 import torchvision
-from extract_features import run
+from extract_features_weiling import run
 from resnet import i3_res50
 import os
 
