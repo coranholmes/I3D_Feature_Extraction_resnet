@@ -27,16 +27,20 @@ def generate(datasetpath, outputpath, pretrainedpath, frequency, batch_size, sam
 	i3d.train(False)  # Set model to evaluate mode
 	for video in videos:
 		videoname = video.split("/")[-1].split(".")[0]
-		startime = time.time()
-		print("Generating for {0}".format(video))
-		Path(temppath).mkdir(parents=True, exist_ok=True)
-		ffmpeg.input(video).output('{}%d.jpg'.format(temppath),start_number=0).global_args('-loglevel', 'quiet').run()
-		print("Preprocessing done..")
-		features = run(i3d, frequency, temppath, batch_size, sample_mode, last_segment)
-		np.save(outputpath + "/" + videoname + "_i3d", features)
-		print("Obtained features of size: ", features.shape)
-		shutil.rmtree(temppath)
-		print("done in {0}.".format(time.time() - startime))
+		feat_save_path = outputpath + "/" + videoname + "_i3d.npy"
+		if os.path.isfile(feat_save_path):
+			print("{} already exists".format(feat_save_path))
+		else:
+			startime = time.time()
+			print("Generating for {0}".format(video))
+			Path(temppath).mkdir(parents=True, exist_ok=True)
+			ffmpeg.input(video).output('{}%d.jpg'.format(temppath),start_number=0).global_args('-loglevel', 'quiet').run()
+			print("Preprocessing done..")
+			features = run(i3d, frequency, temppath, batch_size, sample_mode, last_segment)
+			np.save(feat_save_path, features)
+			print("Obtained features of size: ", features.shape)
+			shutil.rmtree(temppath)
+			print("done in {0}.".format(time.time() - startime))
 
 if __name__ == '__main__': 
 	parser = argparse.ArgumentParser()
