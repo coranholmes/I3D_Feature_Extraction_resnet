@@ -14,14 +14,15 @@ def run(i3d, frequency, temppath, batch_size, sample_mode, last_segment):
     frames = []
 
     for i, (inputs, _) in enumerate(dataloader):
-        # 应该先填充最后一个batch后reshape
         if i == len(dataloader) - 1:
             if inputs.shape[0] < frequency:
                 inputs = torch.cat([inputs, inputs[-1].repeat(frequency - inputs.shape[0], 1, 1, 1, 1)], dim=0)
         frames.append(inputs)  # 16,10,3,224,224
 
+    print("frame no.", len(frames))
     full_features = [[] for i in range(10)]
     for i in range(0, len(frames), batch_size):
+        print(i)
         start = i
         end = i + batch_size if i + batch_size < len(frames) else len(frames)
         frames_batch = torch.cat(frames[start:end], dim=0)
@@ -34,10 +35,11 @@ def run(i3d, frequency, temppath, batch_size, sample_mode, last_segment):
                 outputs = i3d(inp)
             full_features[i].append(outputs.data.cpu().numpy())
 
+    # {list: 10, 57}, each shape = [20,2048, 1,1 1], 20 is batch size, 57 is no. of batches
     full_features = [np.concatenate(i, axis=0) for i in
-                     full_features]  # {list: 10, 57}, each shape = [20,2048, 1,1 1], 20 is batch size, 57 is no. of batches
+                     full_features]  # {list: 10}, each shape = [1140,2048, 1,1,1]
     full_features = [np.expand_dims(i, axis=0) for i in
-                     full_features]  # {list: 10}, each shape = [1140,2048, 1,1,1] -> {list: 10}, each shape = [1,1140,2048, 1,1,1]
+                     full_features]   # {list: 10}, each shape = [1,1140,2048, 1,1,1]
     full_features = np.concatenate(full_features, axis=0)  # [10,1140,2048, 1,1,1]
     full_features = full_features[:, :, :, 0, 0, 0]  # [10,1140,2048]
     full_features = np.array(full_features).transpose([1, 0, 2])  # [1140,10,2048]
