@@ -17,7 +17,7 @@ def run(i3d, frequency, temppath, batch_size, sample_mode, last_segment):
                 inputs = torch.cat([inputs, inputs[-1].repeat(frequency - inputs.shape[0], 1, 1, 1, 1)], dim=0)
         frames.append(inputs)
         if (i + 1) % batch_size == 0 or i == len(dataloader) - 1:  # 每320个feed一次model or 数据全部取出
-            print(i)
+            print(i + 1)
             frames_batch = torch.cat(frames, dim=0)
             frames_batch = frames_batch.view(-1, frequency, 10, 3, 224, 224)  # [20, 16, 10, 3, 224, 224]
             frames_batch = frames_batch.permute(2, 0, 3, 1, 4, 5)  # [10, 20, 16, 3, 224, 224]
