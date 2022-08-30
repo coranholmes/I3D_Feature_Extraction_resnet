@@ -8,7 +8,7 @@ from resnet import i3_res50
 
 
 def run(i3d, frequency, temppath, batch_size, sample_mode, last_segment):
-    dataloader = create_dataloader(temppath + "../", frequency, 0)
+    dataloader = create_dataloader(os.path.join(temppath, ".."), frequency, 0)
     frames = []
     full_features = [[] for i in range(10)]
     for i, (inputs, _) in enumerate(dataloader):  # i is the index of the frame
@@ -23,7 +23,7 @@ def run(i3d, frequency, temppath, batch_size, sample_mode, last_segment):
             frames_batch = frames_batch.permute(2, 0, 3, 1, 4, 5)  # [10, 20, 16, 3, 224, 224]
             for j in range(10):
                 with torch.no_grad():
-                    b_data = frames_batch[j].cuda()
+                    b_data = frames_batch[j].cuda()  # TODO change cuda here???
                     inp = {'frames': b_data}  # bsx3x16x224x224
                     # print(i, j)
                     outputs = i3d(inp)
