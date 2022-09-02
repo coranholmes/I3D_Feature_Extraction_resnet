@@ -23,7 +23,7 @@ def run(i3d, frequency, temppath, batch_size, sample_mode, last_segment):
             frames_batch = frames_batch.permute(2, 0, 3, 1, 4, 5)  # [10, 20, 16, 3, 224, 224]
             for j in range(10):
                 with torch.no_grad():
-                    b_data = frames_batch[j].cuda()  # TODO change cuda here???
+                    b_data = frames_batch[j].cuda()
                     inp = {'frames': b_data}  # bsx3x16x224x224
                     # print(i, j)
                     outputs = i3d(inp)

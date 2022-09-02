@@ -4,20 +4,17 @@ import argparse
 import numpy as np
 import time
 import ffmpeg
-import torch
-import torch.nn as nn
-import torch.nn.functional as F
-import torch.optim as optim
-from torch.optim import lr_scheduler
-from torch.autograd import Variable
-import torchvision
-from extract_features_weiling import run
 from resnet import i3_res50
 import os
 
 
 def generate(args):
-    datasetpath, outputpath, pretrainedpath, frequency, batch_size, sample_mode, last_segment, format, file_type = args.datasetpath, args.outputpath, args.pretrainedpath, args.frequency, args.batch_size, args.sample_mode, args.last_segment, args.video_format, args.file_type
+    datasetpath, outputpath, pretrainedpath, frequency, batch_size, sample_mode, last_segment, format, file_type, version = args.datasetpath, args.outputpath, args.pretrainedpath, args.frequency, args.batch_size, args.sample_mode, args.last_segment, args.video_format, args.file_type, args.version
+    if version == "v2":
+        from extract_features import run
+    elif version == "v3":
+        from extract_features_weiling import run
+
     Path(outputpath).mkdir(parents=True, exist_ok=True)
     temppath = outputpath + "/temp/"
     rootdir = Path(datasetpath)
@@ -73,5 +70,6 @@ if __name__ == '__main__':
                         help="whether to pad or cut the last segment")
     parser.add_argument('--video_format', type=str, default="mp4", help="video format")
     parser.add_argument('--file_type', type=str, default="video", choices=['video', 'image'], help="file type")
+    parser.add_argument('--version', type=str, choices=["v2", "v3"], default="v3", help="version")
     args = parser.parse_args()
     generate(args)
