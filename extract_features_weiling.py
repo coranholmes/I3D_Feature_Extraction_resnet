@@ -8,7 +8,8 @@ from resnet import i3_res50
 
 
 def run(i3d, frequency, temppath, batch_size, sample_mode, last_segment):
-    dataloader = create_dataloader(os.path.join(temppath, ".."), frequency, 0)
+    tmp_path = os.path.join(temppath, "..")
+    dataloader = create_dataloader(tmp_path, frequency, 0)
     frames = []
     full_features = [[] for i in range(10)]
     for i, (inputs, _) in enumerate(dataloader):  # i is the index of the frame

@@ -1,3 +1,4 @@
+import sys
 from pathlib import Path
 import shutil
 import argparse
@@ -31,7 +32,7 @@ def generate(args):
     i3d.cuda()
     i3d.train(False)  # Set model to evaluate mode
     for video in videos:
-        videoname = video.split("/")[-1].split(".")[0]
+        videoname = video.split("/")[-1][:-4]  # 注意这里violence的视频名字带有.，所以不能用.分割
         feat_save_path = outputpath + "/" + videoname + "_i3d.npy"
         print(feat_save_path)
         if os.path.isfile(feat_save_path):
