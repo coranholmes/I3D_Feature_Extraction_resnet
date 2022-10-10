@@ -10,7 +10,7 @@ import os
 
 
 def generate(args):
-    datasetpath, outputpath, pretrainedpath, frequency, batch_size, sample_mode, last_segment, format, file_type, version = args.datasetpath, args.outputpath, args.pretrainedpath, args.frequency, args.batch_size, args.sample_mode, args.last_segment, args.video_format, args.file_type, args.version
+    datasetpath, outputpath, pretrainedpath, frequency, batch_size, sample_mode, last_segment, format, file_type, version = args.datasetpath, args.outputpath, args.pretrainedpath, args.frequency, args.batch_size, args.sample_mode, args.last_segment, args.file_format, args.file_type, args.version
     if version == "v2":
         from extract_features import run
     elif version == "v3":
@@ -32,7 +32,12 @@ def generate(args):
     i3d.cuda()
     i3d.train(False)  # Set model to evaluate mode
     for video in videos:
-        videoname = video.split("/")[-1][:-4]  # 注意这里violence的视频名字带有.，所以不能用.分割
+        if args.file_type == "video":
+            videoname = video.split("/")[-1][:-4]  # 注意这里violence的视频名字带有.，所以不能用.分割
+        elif args.file_type == "image":
+            videoname = video
+        else:
+            raise Exception("file_type must be video or image")
         feat_save_path = outputpath + "/" + videoname + "_i3d.npy"
         print(feat_save_path)
         if os.path.isfile(feat_save_path):
@@ -69,7 +74,7 @@ if __name__ == '__main__':
     parser.add_argument('--sample_mode', type=str, default="oversample")
     parser.add_argument('--last_segment', type=str, default="padding", choices={"padding", "cutting"},
                         help="whether to pad or cut the last segment")
-    parser.add_argument('--video_format', type=str, default="mp4", help="video format")
+    parser.add_argument('--file_format', type=str, default="mp4", help="video format")
     parser.add_argument('--file_type', type=str, default="video", choices=['video', 'image'], help="file type")
     parser.add_argument('--version', type=str, choices=["v2", "v3"], default="v3", help="version")
     args = parser.parse_args()
